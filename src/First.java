@@ -40,7 +40,7 @@ public class First extends PApplet {
         }
     }
 
-    public void drawPoints(Point2D.Double[] pts, float size) {
+    public void drawPoints(Point2D.Float[] pts, float size) {
         int l = pts.length;
         for (int i = 0; i < l; i++) {
             ellipse((float) (pts[i].getX()), (float) (pts[i].getY()), size, size);
@@ -48,7 +48,7 @@ public class First extends PApplet {
     }
 
 
-    float[][] getArrayFromPts(Point2D.Double[] pts) {
+    float[][] getArrayFromPts(Point2D.Float[] pts) {
         int l = pts.length;
         float[][] array = new float[l][2];
         for (int i = 0; i < l; i++) {
@@ -58,11 +58,11 @@ public class First extends PApplet {
         return array;
     }
 
-    Point2D.Double[] getPtsfromArray(float[][] array) {
-        Point2D.Double[] pts = new Point2D.Double[array.length];
+    Point2D.Float[] getPtsfromArray(float[][] array) {
+        Point2D.Float[] pts = new Point2D.Float[array.length];
         int l = pts.length;
         for (int i = 0; i < l; i++) {
-            pts[i] = new Point2D.Double((double) (array[i][0]), (double)(array[i][1]));
+            pts[i] = new Point2D.Float(array[i][0], array[i][1]);
         }
         return pts;
     }
@@ -80,9 +80,9 @@ public class First extends PApplet {
     void drawVoronoi() {
 
         int numPts = 40;
-        Point2D.Double[] points = new Point2D.Double[numPts];
+        Point2D.Float[] points = new Point2D.Float[numPts];
         for (int i = 0; i < numPts; i++) {
-            points[i] = new Point2D.Double(random(0, 800), random(0, 800));
+            points[i] = new Point2D.Float(random(0, 800), random(0, 800));
         }
 
 
@@ -125,7 +125,7 @@ public class First extends PApplet {
             float[] res;
             int cl = coords.length;
 
-            Point2D.Double pt = polygonCenterOfMass(getPtsfromArray(coords));
+            Point2D.Float pt = polygonCenterOfMass(getPtsfromArray(coords));
             float[] centroid = new float[2];
             centroid[0] = (float)(pt.getX());
             centroid[1] = (float)(pt.getY());
@@ -133,10 +133,9 @@ public class First extends PApplet {
             noStroke();
             fill(128, 0, 255);
             ellipse(centroid[0], centroid[1], 10, 10);
-            //ellipse(400, 400, 10, 10);
+
 
             float[][] r = new float[5][2];
-            //float[] rY = new float[5];
 
             for (int j = 0; j < cl; j++) {
                 indexA = (j + 1) % cl;
@@ -189,13 +188,13 @@ public class First extends PApplet {
         return moo;
     }
 
-    Point2D.Double getPoint(float polygon[][], int n) {
-        final Point2D.Double pt = new Point2D.Double(polygon[n][0], polygon[n][1]);
+    Point2D.Float getPoint(float polygon[][], int n) {
+        final Point2D.Float pt = new Point2D.Float(polygon[n][0], polygon[n][1]);
         return pt;
     }
 
 
-    public static double PolygonArea(Point2D.Double[] polygon, int N) {
+    public static double PolygonArea(Point2D.Float[] polygon, int N) {
 
         int i, j;
         double area = 0;
@@ -210,16 +209,16 @@ public class First extends PApplet {
         return (Math.abs(area));
     }
 
-    public static Point2D.Double polygonCenterOfMass(Point2D.Double[] pg) {
+    public static Point2D.Float polygonCenterOfMass(Point2D.Float[] pg) {
 
         if (pg == null)
             return null;
 
         int N = pg.length;
-        Point2D.Double[] polygon = new Point2D.Double[N];
+        Point2D.Float[] polygon = new Point2D.Float[N];
 
         for (int q = 0; q < N; q++)
-            polygon[q] = new Point2D.Double(pg[q].getX(), pg[q].getY());
+            polygon[q] = new Point2D.Float((float)(pg[q].getX()), (float)(pg[q].getY()));
 
         double cx = 0, cy = 0;
         double A = PolygonArea(polygon, N);
@@ -235,7 +234,7 @@ public class First extends PApplet {
         factor = 1.0 / (6.0 * A);
         cx *= factor;
         cy *= factor;
-        return new Point2D.Double((int) Math.abs(Math.round(cx)), (int) Math.abs(Math
+        return new Point2D.Float((int) Math.abs(Math.round(cx)), (int) Math.abs(Math
                 .round(cy)));
     }
 }
