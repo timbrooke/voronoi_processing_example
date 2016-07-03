@@ -1,6 +1,5 @@
 import processing.core.PApplet;
 import megamu.mesh.*;
-
 import java.awt.geom.Point2D;
 
 public class First extends PApplet {
@@ -21,10 +20,16 @@ public class First extends PApplet {
 
     /* sketch initial setup */
     public void setup() {
+        displayVoronoi();
+    }
+    public void displayVoronoi(){
         background(255);
         drawVoronoi();
+    }
 
 
+    public void mouseClicked(){
+           displayVoronoi();
     }
 
     /* put something on the stage */
@@ -67,11 +72,11 @@ public class First extends PApplet {
         return pts;
     }
 
-    float[][] scaleAbout(float k, float xx,float yy,float[][]pts){
-        float [][] result = new float[pts.length][2];
-        for(int i=0;i<pts.length;i++){
-            result[i][0] = k*(pts[i][0] - xx)+xx;
-            result[i][1] = k*(pts[i][1] - yy)+yy;
+    float[][] scaleAbout(float k, float xx, float yy, float[][] pts) {
+        float[][] result = new float[pts.length][2];
+        for (int i = 0; i < pts.length; i++) {
+            result[i][0] = k * (pts[i][0] - xx) + xx;
+            result[i][1] = k * (pts[i][1] - yy) + yy;
         }
         return result;
     }
@@ -121,46 +126,51 @@ public class First extends PApplet {
         int l = myRegions.length;
         for (int i = 0; i < l; i++) {
             float[][] coords = myRegions[i].getCoords();
-            int indexA, indexB;
-            float[] res;
-            int cl = coords.length;
 
-            Point2D.Float pt = polygonCenterOfMass(getPtsfromArray(coords));
-            float[] centroid = new float[2];
-            centroid[0] = (float)(pt.getX());
-            centroid[1] = (float)(pt.getY());
-            //println("x:" + centroid[0] + " y:" + centroid[1]);
-            noStroke();
-            fill(128, 0, 255);
-            ellipse(centroid[0], centroid[1], 10, 10);
+            if (isPolyInsideRect(0, 0, 800, 800, coords)) {
+
+                int indexA, indexB;
+                float[] res;
+                int cl = coords.length;
 
 
-            float[][] r = new float[5][2];
+                Point2D.Float pt = polygonCenterOfMass(getPtsfromArray(coords));
+                float[] centroid = new float[2];
+                centroid[0] = (float) (pt.getX());
+                centroid[1] = (float) (pt.getY());
+                //println("x:" + centroid[0] + " y:" + centroid[1]);
+                noStroke();
+                fill(128, 0, 255);
+                ellipse(centroid[0], centroid[1], 10, 10);
 
-            for (int j = 0; j < cl; j++) {
-                indexA = (j + 1) % cl;
-                indexB = (j + 2) % cl;
-                r[0][0] = coords[j][0];
-                r[2][0] = coords[indexA][0];
-                r[4][0] = coords[indexB][0];
-                r[1][0] = (float) ((r[0][0] + r[2][0]) / 2.0);
-                r[3][0] = (float) ((r[2][0] + r[4][0]) / 2.0);
-                r[0][1] = coords[j][1];
-                r[2][1] = coords[indexA][1];
-                r[4][1] = coords[indexB][1];
-                r[1][1] = (float) ((r[0][1] + r[2][1]) / 2.0);
-                r[3][1] = (float) ((r[2][1] + r[4][1]) / 2.0);
 
-                stroke(0);
-                noFill();
-                bezier(r[1][0], r[1][1], r[2][0], r[2][1], r[2][0], r[2][1], r[3][0], r[3][1]);
+                float[][] r = new float[5][2];
 
-                float[][]r2 = scaleAbout(0.80f,(float)(pt.getX()),(float)(pt.getY()),r);
+                for (int j = 0; j < cl; j++) {
+                    indexA = (j + 1) % cl;
+                    indexB = (j + 2) % cl;
+                    r[0][0] = coords[j][0];
+                    r[2][0] = coords[indexA][0];
+                    r[4][0] = coords[indexB][0];
+                    r[1][0] = (float) ((r[0][0] + r[2][0]) / 2.0);
+                    r[3][0] = (float) ((r[2][0] + r[4][0]) / 2.0);
+                    r[0][1] = coords[j][1];
+                    r[2][1] = coords[indexA][1];
+                    r[4][1] = coords[indexB][1];
+                    r[1][1] = (float) ((r[0][1] + r[2][1]) / 2.0);
+                    r[3][1] = (float) ((r[2][1] + r[4][1]) / 2.0);
 
-                stroke(255,128,0);
-                noFill();
-                bezier(r2[1][0], r2[1][1], r2[2][0], r2[2][1], r2[2][0], r2[2][1], r2[3][0], r2[3][1]);
+                    stroke(0);
+                    noFill();
+                    bezier(r[1][0], r[1][1], r[2][0], r[2][1], r[2][0], r[2][1], r[3][0], r[3][1]);
 
+                    float[][] r2 = scaleAbout(0.80f, (float) (pt.getX()), (float) (pt.getY()), r);
+
+                    stroke(255, 128, 0);
+                    noFill();
+                    bezier(r2[1][0], r2[1][1], r2[2][0], r2[2][1], r2[2][0], r2[2][1], r2[3][0], r2[3][1]);
+
+                }
             }
         }
     }
@@ -209,6 +219,19 @@ public class First extends PApplet {
         return (Math.abs(area));
     }
 
+    public static boolean isPolyInsideRect(float x, float y, float w, float h, float[][] polygon) {
+        boolean result = true;
+        float x2 = x + w;
+        float y2 = y + h;
+        float[] pt;
+        for (int i = 0; i < polygon.length; i++) {
+            pt = polygon[i];
+            result = result && pt[0] >= x && pt[0] <= x2 && pt[1] >= y && pt[1] <= y2;
+        }
+        return result;
+    }
+
+
     public static Point2D.Float polygonCenterOfMass(Point2D.Float[] pg) {
 
         if (pg == null)
@@ -218,7 +241,7 @@ public class First extends PApplet {
         Point2D.Float[] polygon = new Point2D.Float[N];
 
         for (int q = 0; q < N; q++)
-            polygon[q] = new Point2D.Float((float)(pg[q].getX()), (float)(pg[q].getY()));
+            polygon[q] = new Point2D.Float((float) (pg[q].getX()), (float) (pg[q].getY()));
 
         double cx = 0, cy = 0;
         double A = PolygonArea(polygon, N);
