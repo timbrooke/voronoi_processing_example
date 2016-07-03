@@ -67,7 +67,14 @@ public class First extends PApplet {
         return pts;
     }
 
-    //void scaleAbout(float xx,float yy,)
+    float[][] scaleAbout(float k, float xx,float yy,float[][]pts){
+        float [][] result = new float[pts.length][2];
+        for(int i=0;i<pts.length;i++){
+            result[i][0] = k*(pts[i][0] - xx)+xx;
+            result[i][1] = k*(pts[i][1] - yy)+yy;
+        }
+        return result;
+    }
 
 
     void drawVoronoi() {
@@ -128,30 +135,32 @@ public class First extends PApplet {
             ellipse(centroid[0], centroid[1], 10, 10);
             //ellipse(400, 400, 10, 10);
 
-            float[] rX = new float[5];
-            float[] rY = new float[5];
+            float[][] r = new float[5][2];
+            //float[] rY = new float[5];
 
             for (int j = 0; j < cl; j++) {
                 indexA = (j + 1) % cl;
                 indexB = (j + 2) % cl;
-                rX[0] = coords[j][0];
-                rX[2] = coords[indexA][0];
-                rX[4] = coords[indexB][0];
-                rX[1] = (float) ((rX[0] + rX[2]) / 2.0);
-                rX[3] = (float) ((rX[2] + rX[4]) / 2.0);
-                rY[0] = coords[j][1];
-                rY[2] = coords[indexA][1];
-                rY[4] = coords[indexB][1];
-                rY[1] = (float) ((rY[0] + rY[2]) / 2.0);
-                rY[3] = (float) ((rY[2] + rY[4]) / 2.0);
+                r[0][0] = coords[j][0];
+                r[2][0] = coords[indexA][0];
+                r[4][0] = coords[indexB][0];
+                r[1][0] = (float) ((r[0][0] + r[2][0]) / 2.0);
+                r[3][0] = (float) ((r[2][0] + r[4][0]) / 2.0);
+                r[0][1] = coords[j][1];
+                r[2][1] = coords[indexA][1];
+                r[4][1] = coords[indexB][1];
+                r[1][1] = (float) ((r[0][1] + r[2][1]) / 2.0);
+                r[3][1] = (float) ((r[2][1] + r[4][1]) / 2.0);
 
                 stroke(0);
                 noFill();
-                bezier(rX[1], rY[1], rX[2], rY[2], rX[2], rY[2], rX[3], rY[3]);
+                bezier(r[1][0], r[1][1], r[2][0], r[2][1], r[2][0], r[2][1], r[3][0], r[3][1]);
 
+                float[][]r2 = scaleAbout(0.80f,(float)(pt.getX()),(float)(pt.getY()),r);
 
-
-
+                stroke(255,128,0);
+                noFill();
+                bezier(r2[1][0], r2[1][1], r2[2][0], r2[2][1], r2[2][0], r2[2][1], r2[3][0], r2[3][1]);
 
             }
         }
